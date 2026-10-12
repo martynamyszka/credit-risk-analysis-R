@@ -24,4 +24,4 @@ Before modeling, the data revealed several crucial risk indicators:
 4. **Optimization (AdaBoost):** Applied adaptive boosting to improve the model's ability to identify complex risk patterns and reduce the number of costly misclassifications.
 
 ## How to view the project
-To see the full code, visualizations, and detailed business commentary, simply open the `Credit_Risk_Analysis.md` (or `.html`) file in this repository.
+To see the full code, visualizations, and detailed business commentary, simply open the `Credit_Risk_Analysis.md` file in this repository.
