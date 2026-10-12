@@ -90,7 +90,7 @@ ggplot(dane, aes(x = months_loan_duration, fill = default)) +
   labs(title = "Loan Duration Distribution", x = "Months", fill = "Default")
 ```
 
-![]![](https://github.com/martynamyszka/credit-risk-analysis-R/blob/main/unnamed-chunk-2-1.png?raw=true)<!-- -->
+![](https://github.com/martynamyszka/credit-risk-analysis-R/blob/main/unnamed-chunk-2-1.png?raw=true)<!-- -->
 
 ### Conclusions from the ‘months_loan_duration’ variable distribution analysis:
 
@@ -118,7 +118,7 @@ ggplot(dane, aes(x = checking_balance, fill = default)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-![]![](https://github.com/martynamyszka/credit-risk-analysis-R/blob/main/unnamed-chunk-3-1.png?raw=true)<!-- -->
+![](https://github.com/martynamyszka/credit-risk-analysis-R/blob/main/unnamed-chunk-3-1.png?raw=true)<!-- -->
 
 ### Conclusions from the ‘checking_balance’ (categorical variable) distribution analysis:
 
