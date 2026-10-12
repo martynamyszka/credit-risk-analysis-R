@@ -142,5 +142,6 @@ CrossTable(predykcja_boost,zbior_testowy$default,
            dnn=c('predicted','actual'))
 ```
 The results after using the AdaBoost method are much better.
+
 ## Final Business Conclusions
 Applying AdaBoost significantly reduced the total error rate. While predicting defaults remains a challenging task, the ensemble model outperforms the single decision tree, providing a more robust risk management tool for the financial institution.
