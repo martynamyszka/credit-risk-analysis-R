@@ -69,7 +69,7 @@ ggplot(dane, aes(x = amount, fill = default)) +
   labs(title = "Loan Amount Distribution", x = "Amount", fill = "Default")
 ```
 
-![](Credit_Risk_Analysis_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+![](https://github.com/martynamyszka/credit-risk-analysis-R/blob/main/unnamed-chunk-1-1.png?raw=true)<!-- -->
 
 ### Conclusions from the ‘amount’ variable distribution analysis
 
@@ -90,7 +90,7 @@ ggplot(dane, aes(x = months_loan_duration, fill = default)) +
   labs(title = "Loan Duration Distribution", x = "Months", fill = "Default")
 ```
 
-![](Credit_Risk_Analysis_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![]![](https://github.com/martynamyszka/credit-risk-analysis-R/blob/main/unnamed-chunk-2-1.png?raw=true)<!-- -->
 
 ### Conclusions from the ‘months_loan_duration’ variable distribution analysis:
 
@@ -118,7 +118,7 @@ ggplot(dane, aes(x = checking_balance, fill = default)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-![](Credit_Risk_Analysis_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![]![](https://github.com/martynamyszka/credit-risk-analysis-R/blob/main/unnamed-chunk-3-1.png?raw=true)<!-- -->
 
 ### Conclusions from the ‘checking_balance’ (categorical variable) distribution analysis:
 
@@ -503,8 +503,10 @@ CrossTable(predykcja_boost,zbior_testowy$default,
     ## 
     ## 
 
-The results after using the AdaBoost method are much better. \## Final
-Business Conclusions Applying AdaBoost significantly reduced the total
-error rate. While predicting defaults remains a challenging task, the
+The results after using the AdaBoost method are much better. 
+
+## Final Business Conclusions 
+Applying AdaBoost significantly reduced the total error rate. 
+While predicting defaults remains a challenging task, the
 ensemble model outperforms the single decision tree, providing a more
 robust risk management tool for the financial institution.
