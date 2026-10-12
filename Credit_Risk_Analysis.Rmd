@@ -1,0 +1,146 @@
+---
+title: "Credit Risk Predictive Modeling using Decision Trees and AdaBoost"
+author: "Martyna Myszka"
+date: "2026-10-11"
+output: github_document
+---
+
+## Business Problem & Objective
+The goal of this project is to identify credit applicants with a high risk of default. Using historical data from a German credit agency (1000 loan applicants), we aim to build a predictive model that helps the bank minimize financial losses by rejecting high-risk applications.
+
+## Data Loading and Preprocessing
+First, we load the dataset and prepare our target variable 'default'.
+```{r setup, message=FALSE, warning=FALSE}
+library(readr)
+library(ggplot2)
+library(C50)
+library(gmodels)
+dane <- read.csv("credit.csv", sep = ";", header = TRUE, stringsAsFactors = TRUE)
+head(dane)
+dane$default <- as.factor(dane$default)
+```
+
+##  Exploratory Data Analysis (EDA)
+Before modeling, we explore some key variables to understand what drives loan defaults.
+
+```{r}
+# Loan Amount Distribution
+ggplot(dane, aes(x = amount, fill = default)) +
+  geom_histogram(bins = 30, color = "black", alpha = 0.6, position = "identity") +
+  theme_minimal() +
+  labs(title = "Loan Amount Distribution", x = "Amount", fill = "Default")
+```
+
+### Conclusions from the 'amount' variable distribution analysis
+
+* **Right-skewed distribution:** Small loan amounts dominate (peak around 1000-3500).
+* **Low risk indicator:** Small amounts indicate a low risk of default (a vast majority of loans are successfully repaid).
+* **Higher risk threshold:** Large amounts (e.g., >7500) are associated with higher risk (the proportion of defaults increases).
+* **Summary:** The 'amount' feature effectively differentiates risk and will be useful in the model.
+
+```{r}
+# Loan Duration Distribution
+ggplot(dane, aes(x = months_loan_duration, fill = default)) +
+  geom_histogram(bins = 20, color = "black", alpha = 0.6, position = "identity") +
+  theme_minimal() +
+  labs(title = "Loan Duration Distribution", x = "Months", fill = "Default")
+```
+
+### Conclusions from the 'months_loan_duration' variable distribution analysis:
+* Most loans in the dataset are short-to-medium term (concentrated between 6 and 24 months).
+* **Risk trend:** The longer the loan duration, the higher the relative risk of default.
+* **High-risk segment:** Loans lasting more than 36 months show a critically high default rate (the proportion of defaults often equals or exceeds successful repayments).
+* **Summary:** Loan duration is a very strong indicator of credit risk and will be an important feature in the predictive model.
+
+Let's also check how the distribution of some categorical variable looks like. 
+```{r}
+# 3. Checking balance distribution
+ggplot(dane, aes(x = checking_balance, fill = default)) +
+  geom_bar(position = "dodge", color = "black") +
+  theme_minimal() +
+  labs(title = "Checking balance Distribution", 
+       x = "Checking balance", 
+       fill ="Default") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+### Conclusions from the 'checking_balance' (categorical variable) distribution analysis:
+* **Critical risk:** Applicants with a negative balance ('< 0 DM') have an extremely high default rate, with almost equal numbers of repaid and defaulted loans.
+* **Moderate risk:** Customers with a low positive balance ('1 - 200 DM') show a noticeable default rate, though the majority still repay.
+* **Safe segments:** High balances ('> 200 DM') and 'unknown' statuses indicate very low credit risk.
+* **Business Insight:** Interestingly, the 'unknown' category contains the largest number of applicants and represents the safest borrower profile. This variable strongly separates risk profiles.
+
+### Overall Default Rate (Baseline)
+Before building the predictive model, it is crucial to establish the baseline risk by checking the overall proportion of defaulted loans in the dataset. This helps us understand the class balance and sets a performance benchmark for our algorithms.
+```{r}
+# Method 1: Generating a proportion table for all classes
+prop.table(table(dane$default))
+
+# Method 2: Quick calculation of the exact default rate (fraction of 'yes')
+# R evaluates 'yes' as 1 and 'no' as 0, so the mean gives the exact probability
+mean(dane$default == "yes")
+```
+
+## Train/Test Data Split
+We split the data into a training set (90%) and a testing set (10%) to evaluate our model on unseen data. We don't know if the data is ordered in a specific way, so the best solution here is to randomize its order.
+```{r}
+RNGversion("3.5.2")
+set.seed(123)
+#now we choose randomly 900 indices of first 1000
+sample_train=sample(1000,900)
+#str(sample_train)
+zbior_uczacy=dane[sample_train,]
+zbior_testowy=dane[-sample_train,] #here by using '-sample_train' we take the indices that weren't sampled above
+```
+
+Now let's check if the proportions of the 'default' class are similar in both sets. This is important because a bad random split can ruin the model's performance. If the difference is too big, we would need to adjust our sampling method.
+```{r}
+prop.table(table(zbior_testowy$default))
+prop.table(table(zbior_uczacy$default))
+#they are similar, so we can continue
+```
+## Model Training: C5.0 Decision Tree
+We build a baseline decision tree model to predict the default status.
+```{r}
+model <- C5.0(zbior_uczacy[-17], zbior_uczacy$default, trials = 1, costs = NULL) #[-17] means that 'default' is gone from it
+model
+```
+
+Let's look at the tree structure:
+```{r}
+summary(model)
+```
+
+### Decision Tree Logic
+
+The generated C5.0 tree reveals the primary rules the model uses to classify applicants:
+
+* **The Root Node (Most Important Feature):** 'checking_balance' is the absolute most important variable (100% attribute usage). If an applicant has a balance '> 200 DM' or an 'unknown' account, the model instantly classifies them as low-risk (class 'no'), terminating the decision path for 412 applicants.
+* **The "Trap" of Good Credit History:** Interestingly, for applicants with poor checking balances ('< 0 DM' or '1 - 200 DM'), having a 'perfect' or 'very good' credit history leads straight to a high-risk classification (class 'yes'). *Business insight: This might indicate applicants who repay other small loans flawlessly but are now taking a loan they cannot afford.*
+* **Loan Duration & Savings:** For the remaining applicants, the model splits them primarily by 'months_loan_duration' (the threshold is 22 months). Long loans combined with low savings ('savings_balance < 100 DM') drastically increase the predicted risk of default.
+
+## Model Evaluation
+We test the model against our test set.
+```{r}
+credit_prediction <- predict(model, zbior_testowy)
+CrossTable(credit_prediction,zbior_testowy$default,prop.c = FALSE,prop.chisq = FALSE,prop.r=FALSE,
+           dnn=c('predicted default', 'actual default'))
+```
+
+As shown in the CrossTable above, the model correctly predicted 73% of the cases. However, it misclassifies too many risky loans as safe. This is a very costly error for a bank.
+
+### Model Optimization: AdaBoost
+To reduce the costly misclassifications, we apply the Adaptive Boosting (AdaBoost) algorithm with 10 trials. The model will focus on the most difficult cases from the previous iterations.
+```{r}
+credit_boost10=C5.0(zbior_uczacy[-17],zbior_uczacy$default,trials=10)
+credit_boost10
+#summary(credit_boost10)
+
+predykcja_boost=predict(credit_boost10,zbior_testowy)
+CrossTable(predykcja_boost,zbior_testowy$default,
+           prop.c=FALSE, prop.chisq = FALSE, prop.r=FALSE,
+           dnn=c('predicted','actual'))
+```
+The results after using the AdaBoost method are much better.
+## Final Business Conclusions
+Applying AdaBoost significantly reduced the total error rate. While predicting defaults remains a challenging task, the ensemble model outperforms the single decision tree, providing a more robust risk management tool for the financial institution.
