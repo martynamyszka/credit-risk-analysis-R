@@ -1,27 +1,27 @@
-# Credit Risk Analysis & Prediction 📊
+# Credit Risk Analysis & Prediction 
 
 ## Project Overview
-This is an end-to-end data analysis and machine learning project focused on predicting credit default risk. Using the classic German Credit dataset, the project demonstrates a complete analytical workflow: from Exploratory Data Analysis (EDA) and baseline establishment to building and optimizing decision tree models.
+This repository contains a machine learning model built in R to predict credit default risk. Using the German Credit dataset, I wanted to see how well we can predict loan defaults based on financial history. 
 
-The primary business objective of this analysis is not just overall accuracy, but specifically minimizing **False Negatives** — the costly error of classifying a high-risk applicant as safe, which results in significant financial loss for a bank.
+The main goal of this project wasn't just to maximize overall accuracy. From a banking perspective, predicting a bad loan as a good one (False Negative) is the most expensive mistake. Therefore, the focus here is heavily on minimizing those specific errors.
 
-## Tech Stack & Tools
+## Tech Stack
 * **Language:** R
 * **Environment:** RStudio / R Markdown
-* **Data Manipulation & Visualization:** Data frames, `ggplot2`
-* **Machine Learning:** `C50` (Decision Trees), `gmodels` (CrossTable evaluation), AdaBoost ensemble method
+* **Libraries:** `ggplot2` (visualization), `C50` (Decision Trees), `gmodels` (evaluation)
 
-## Key Business Insights (EDA)
-Before modeling, the data revealed several crucial risk indicators:
-* **The "Perfect History" Paradox:** Applicants with "perfect" credit histories often showed higher default rates, likely indicating individuals with no prior credit footprint (a clean slate) rather than proven reliable borrowers.
-* **Checking Balance:** This proved to be the strongest predictor. Applicants with negative balances (< 0 DM) present a critical risk, while those with 'unknown' balances represent the safest segment.
-* **Loan Duration & Amount:** A clear trend shows that longer loans (especially >36 months) and larger amounts (>7500) significantly increase the relative risk of default.
+## Key Findings from EDA
+Before building the model, data exploration revealed a few interesting patterns:
+* **No history isn't good history:** Applicants with "perfect" credit histories actually defaulted more often. This likely means they simply have no credit footprint at all, rather than a proven track record.
+* **Checking balances matter most:** Having a negative balance is the strongest predictor of default, while 'unknown' balances are surprisingly safe.
+* **Size and length:** As expected, longer loans (>36 months) and larger amounts (>7500 DM) carry a significantly higher relative risk.
 
-## Modeling Approach
-1. **Baseline Assessment:** Established initial class balance to understand the underlying default rate and set a benchmark.
-2. **Train/Test Split:** Randomized 90/10 split to evaluate the model on unseen data and verify class stratification.
-3. **Base Model (C5.0):** Built an initial decision tree to extract core business rules and evaluate the baseline confusion matrix.
-4. **Optimization (AdaBoost):** Applied adaptive boosting to improve the model's ability to identify complex risk patterns and reduce the number of costly misclassifications.
+## Modeling Steps
+1. **Baseline & Split:** Checked the initial default rate and split the data (90/10) to evaluate on unseen data.
+2. **Base Model (C5.0):** Trained a simple decision tree to see the initial rules and check the baseline confusion matrix.
+3. **Ensemble (AdaBoost):** Applied adaptive boosting to improve the model's performance and reduce the number of costly False Negatives.
 
 ## How to view the project
-To see the full code, visualizations, and detailed business commentary, simply open the `Credit_Risk_Analysis.md` file in this repository.
+Simply open the `Credit_Risk_Analysis.md` file in this repository to see the full code, plots, and my step-by-step commentary.
+
+
